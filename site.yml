@@ -1,0 +1,38 @@
+pip install ec2
+pip install botocore
+
+
+
+ 
+[root@master aws_instance]# cat site.yml
+---
+- name: Create a new Demo EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: False
+  vars:
+     region: us-east-2
+     instance_type: t2.micro
+     ami: ami-82f4dae7  # Ubuntu 16.04 LTS
+     keypair: ap # pem file name
+     user: A*********************FA
+     password: *******************************V
+  tasks:
+   - name: Create an ec2 instance
+     ec2:
+        aws_access_key: "{{ user }}"
+        aws_secret_key: "{{ password }}"
+        key_name: "{{ keypair }}"
+        group: default  # security group name
+        instance_type: "{{ instance_type}}"
+        image: "{{ ami }}"
+        wait: true
+        region: "{{ region }}"
+        count: 1  # default
+        count_tag:
+           Name: Demo
+        instance_tags:
+           Name: Demo
+        vpc_subnet_id: subnet-6****
+        assign_public_ip: yes
+     register: ec2
